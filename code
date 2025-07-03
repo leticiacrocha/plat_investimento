@@ -1,0 +1,31 @@
+import streamlit as st
+import pandas as pd
+
+st.set_page_config(page_title="Painel de Investimentos - Letícia", layout="wide")
+st.title("📊 Painel Inteligente de Investimentos")
+st.markdown("Visualize os **melhores ativos com baixo aporte e risco médio**, atualizados periodicamente.")
+
+data = {
+    "Ativo": ["BOVA11", "IVVB11", "Tesouro IPCA+ 2035", "HGLG11", "SMALL11"],
+    "Categoria": ["ETF BR", "ETF EUA", "Tesouro Direto", "FII Logística", "ETF Small Caps"],
+    "Risco": ["Médio", "Médio", "Baixo", "Médio", "Médio-Alto"],
+    "Aporte Mínimo (R$)": [100, 250, 35, 110, 90],
+    "Retorno Estimado (%)": [0.9, 1.1, 0.62, 1.2, 1.3]
+}
+df = pd.DataFrame(data)
+
+# Filtros
+categoria = st.sidebar.multiselect("Filtrar por categoria", options=df["Categoria"].unique(), default=df["Categoria"].unique())
+risco = st.sidebar.multiselect("Filtrar por risco", options=df["Risco"].unique(), default=df["Risco"].unique())
+
+# Aplicar filtros
+filtro = df[df["Categoria"].isin(categoria) & df["Risco"].isin(risco)]
+st.dataframe(filtro, use_container_width=True)
+
+st.markdown("---")
+st.subheader("📥 Registrar Aporte")
+st.markdown("Selecione o ativo que deseja registrar:")
+ativo_escolhido = st.selectbox("Ativo", filtro["Ativo"].unique())
+valor = st.number_input("Valor investido (R$)", min_value=10.0, step=10.0)
+if st.button("Registrar"):
+    st.success(f"Aporte registrado: {ativo_escolhido} - R${valor:.2f}")
